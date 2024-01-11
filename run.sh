@@ -1,3 +1,3 @@
 #!/bin/bash
 
-g++ src/*.cpp -o run.exe
+g++ src/*.cpp src/main/Main.cpp -o run.exe

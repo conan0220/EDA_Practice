@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FileTxt.h"
+
 enum Problem {
     ONE,
     TWO,
