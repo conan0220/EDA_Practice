@@ -56,6 +56,28 @@ public:
     std::vector<std::vector<T>> GetMatrix_() const { return matrix_; }
 
     /**
+     * @brief Transpose the matrix.
+     * 
+     * This function flips the rows and columns of the matrix. It creates a new matrix where each row
+     * is formed from the corresponding column of the original matrix and vice versa. This operation
+     * is commonly known as matrix transposition. The function is templated to work with any data type 'T'
+     * that can be stored in a std::vector.
+     * 
+     * @return A new 2D vector of type 'T', representing the transposed matrix.
+     */
+    std::vector<std::vector<T>> FlipMatrixRowColumn() const {
+        std::vector<std::vector<T>> result;
+        result.resize(matrix_[0].size());
+        for (int i = 0; i < matrix_[0].size(); i++) {
+            result[i].resize(matrix_.size());
+            for (int j = 0; j < matrix_.size(); j++) {
+                result[i][j] = matrix_[j][i];
+            }
+        }
+        return result;
+    }
+
+    /**
      * @brief Overloads the subscript operator to access elements of the matrix.
      * 
      * This function provides read-only access to the rows of the matrix. It returns the row at the specified index.
@@ -66,6 +88,33 @@ public:
      * @note Since it returns a copy of the row, any modifications to the returned vector will not affect the original matrix.
      */
     std::vector<T> operator[](const size_t& index) const { return matrix_[index]; }
+
+    /**
+     * @brief Compare two matrices for equality.
+     * 
+     * This function overloads the equality operator (==) to compare two matrices. It checks if both
+     * matrices have the same dimensions (number of rows and columns) and then compares each corresponding
+     * element. If all elements are equal, the matrices are considered equal. The function is templated
+     * to work with any data type 'T' that supports the equality operator.
+     * 
+     * @param other A constant reference to another Matrix object of the same type 'T'.
+     * @return A boolean value: 'true' if the matrices are equal, 'false' otherwise.
+     */
+    bool operator==(const Matrix<T>& other) const {
+        if (this->matrix_.size() == other.matrix_.size() and this-> matrix_[0].size() == other.matrix_[0].size()) {
+            for (int i = 0; i < this->matrix_.size(); i++) {
+                for (int j = 0; j < this->matrix_[0].size(); j++) {
+                    if (this->matrix_[i][j] != other.matrix_[i][j]) {
+                        return false;
+                    }
+                }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
 
 private:
     std::vector<std::vector<T>> matrix_;
