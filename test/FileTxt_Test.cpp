@@ -2,6 +2,18 @@
 
 #include "../src/FileTxt.h"
 
+TEST(FileTxt_Test, Constructor) {
+    FileTxt test1("res/FileTxt_Test1.txt");
+    std::vector<std::string> answer = {
+        "1 2 3 4",
+        " 5 6 7 8   ",
+        "   9 10  "
+    };
+    for (int i = 0; i < answer.size(); i++) {
+        EXPECT_EQ(answer[i], test1.GetContent_()[i]);
+    }
+}
+
 TEST(FileTxt_Test, Split) {
     // test1
     FileTxt test1("res/FileTxt_Test1.txt");
