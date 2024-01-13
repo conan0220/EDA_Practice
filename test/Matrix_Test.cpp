@@ -28,6 +28,7 @@ TEST(Matrix_Test, Constructor) {
             EXPECT_EQ(answer2[i][j], test2[i][j]);
         }
     }
+
 }
 
 TEST(Matrix_Test, FlipMatrixRowColumn) {
@@ -78,4 +79,26 @@ TEST(Matrix_Test, OperatorEquel) {
     };
     Matrix<int> test1(answer1);
     EXPECT_EQ(true, test1 == answer1);
+}
+
+TEST(Matrix_Test, IsMatrixLegal) {
+    // test1
+    std::vector<std::vector<int>> input1 = {};
+    EXPECT_EQ(false, Matrix<int>::IsMatrixLegal(input1));
+
+    // test2
+    std::vector<std::vector<int>> input2 = {
+        { 1, 2, 3, 4 },
+        { 5, 6, 7 }
+    };
+    EXPECT_EQ(false, Matrix<int>::IsMatrixLegal(input2));
+
+    // test3
+    std::vector<std::vector<int>> input3 = {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+        { 7, 8, 9 }
+    };
+    EXPECT_EQ(true, Matrix<int>::IsMatrixLegal(input3));
+
 }

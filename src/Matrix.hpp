@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include <gtest/gtest.h>
 
 template <typename T>
 class Matrix {
@@ -15,7 +16,11 @@ public:
      * @param matrix A 2D vector of type T representing the matrix values.
      */
     Matrix(const std::vector<std::vector<T>>& matrix)
-        : matrix_(matrix) {}
+    : matrix_(matrix) {
+        if (!IsMatrixLegal(matrix_)) {
+            throw std::invalid_argument("Matrix is illegal.");
+        }
+    }
 
     /**
      * @brief Constructor for the Matrix class from a 1D array.
@@ -35,6 +40,10 @@ public:
             for (int j = 0; j < column; j++) {
                 matrix_[i][j] = matrix[i * column + j];
             }
+        }
+        if (!IsMatrixLegal(matrix_)) {
+            std::cout << "hihihihihihihihii" << std::endl;
+            throw std::invalid_argument("Matrix is illegal.");
         }
     }
 
@@ -77,6 +86,12 @@ public:
         return result;
     }
 
+    std::vector<std::vector<T>> InverseMatrix() const {
+        std::vector<std::vector<T>> result;
+
+    }
+
+
     /**
      * @brief Overloads the subscript operator to access elements of the matrix.
      * 
@@ -117,5 +132,29 @@ public:
     }
 
 private:
+
+    FRIEND_TEST(Matrix_Test, IsMatrixLegal);
+    /**
+     * Checks if the given matrix is legal by verifying its structure.
+     * 
+     * A matrix is considered legal if it is not empty and all its rows have the same number of columns.
+     * 
+     * @param matrix A reference to a vector of vectors representing the matrix to check.
+     * @return bool True if the matrix is legal, false otherwise.
+     */
+    static bool IsMatrixLegal(const std::vector<std::vector<T>>& matrix) {
+        if (matrix.empty()) {
+            return false;
+        }
+        size_t columnCount = matrix[0].size();
+        for (const std::vector<T>& row : matrix) {
+            if (row.size() != columnCount) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
     std::vector<std::vector<T>> matrix_;
 };
