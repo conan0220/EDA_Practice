@@ -42,7 +42,6 @@ public:
             }
         }
         if (!IsMatrixLegal(matrix_)) {
-            std::cout << "hihihihihihihihii" << std::endl;
             throw std::invalid_argument("Matrix is illegal.");
         }
     }
