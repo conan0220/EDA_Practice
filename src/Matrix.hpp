@@ -73,7 +73,7 @@ public:
      * 
      * @return A new 2D vector of type 'T', representing the transposed matrix.
      */
-    std::vector<std::vector<T>> FlipMatrixRowColumn() const {
+    Matrix FlipMatrixRowColumn() const {
         std::vector<std::vector<T>> result;
         result.resize(matrix_[0].size());
         for (int i = 0; i < matrix_[0].size(); i++) {
@@ -82,12 +82,37 @@ public:
                 result[i][j] = matrix_[j][i];
             }
         }
-        return result;
+        return Matrix(result);
     }
 
-    std::vector<std::vector<T>> InverseMatrix() const {
+    /**
+     * @brief Performs matrix multiplication with another matrix.
+     *
+     * This function multiplies the current matrix instance by another matrix passed as a parameter. It computes the product
+     * by iterating through rows of the first matrix and columns of the second matrix. The function assumes that the number
+     * of columns in the first matrix is equal to the number of rows in the second matrix.
+     *
+     * @param other A constant reference to another Matrix object to be multiplied with.
+     * @return A new Matrix object representing the result of the multiplication.
+     *
+     * @note This function does not modify the original matrices. It creates and returns a new Matrix object.
+     */
+    Matrix Multiplication(const Matrix& other) const {
         std::vector<std::vector<T>> result;
+        result.resize(matrix_.size());
+        int i = 0, j = 0, k = 0;
+        for (i = 0; i < matrix_.size(); i++) {
+            result[i].resize(other[0].size());
+            for (k = 0; k < other[0].size(); k++) {
+                T sum = 0;
+                for (j = 0; j < matrix_[0].size(); j++) {
+                    sum += matrix_[i][j] * other[j][k];
+                }
+                result[i][k] = sum;
+            }
+        }
 
+        return Matrix<T>(result);
     }
 
 

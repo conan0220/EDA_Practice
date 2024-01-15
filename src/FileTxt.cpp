@@ -87,3 +87,25 @@ std::vector<std::string> FileTxt::Split(const std::string& pattern) const {
     
     return result;
 }
+
+std::vector<std::string> FileTxt::SplitSpecificLine(const std::string& pattern, const size_t& lineIndex) const {
+    std::vector<std::string> result;
+    std::string::size_type begin, end;
+
+    std::string line = content_[lineIndex];
+    begin = 0;
+    end = line.find(pattern);
+    while (end != std::string::npos) {
+        if (end - begin != 0) {
+            result.push_back(line.substr(begin, end - begin));
+        }
+        begin = end + pattern.length();
+        end = line.find(pattern, begin);
+    }
+
+    if (begin < line.length()) {
+        result.push_back(line.substr(begin));
+    }
+
+    return result;
+}

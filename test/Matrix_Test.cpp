@@ -102,3 +102,50 @@ TEST(Matrix_Test, IsMatrixLegal) {
     EXPECT_EQ(true, Matrix<int>::IsMatrixLegal(input3));
 
 }
+
+TEST(Matrix_Test, Multiplication) {
+    // test1
+    Matrix<double> A1({
+        { 1, 0, 2 },
+        { -1, 3, 1 }
+    });
+    Matrix<double> B1({
+        { 3, 1 },
+        { 2, 1 },
+        { 1, 0 }
+    });
+    Matrix<double> answer1({
+        { 5, 1 },
+        { 4, 2 }
+    });
+    Matrix<double> result1 = A1.Multiplication(B1);
+    for (int i = 0; i < answer1.GetMatrix_().size(); i++) {
+        for (int j = 0; j < answer1[0].size(); j++) {
+            EXPECT_EQ(answer1[i][j], result1[i][j]);
+        }
+    }
+
+    // test2
+    Matrix<double> A2({
+        { 1, 2 },
+        { 2, 3 },
+        { 3, 4 },
+        { 4, 1 }
+    });
+    Matrix<double> B2({
+        { 2, 3, 1, 4 },
+        { 5, 7, 2, 3 }
+    });
+    Matrix<double> answer2({
+        { 12, 17, 5, 10 },
+        { 19, 27, 8, 17 },
+        { 26, 37, 11, 24 },
+        { 13, 19, 6, 19 }
+    });
+    Matrix<double> result2 = A2.Multiplication(B2);
+    for (int i = 0; i < answer2.GetMatrix_().size(); i++) {
+        for (int j = 0; j < answer2[0].size(); j++) {
+            EXPECT_EQ(answer2[i][j], result2[i][j]);
+        }
+    }
+}

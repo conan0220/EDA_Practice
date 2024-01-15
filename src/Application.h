@@ -19,5 +19,9 @@ private:
     void SelectProblem();
     void ExecuteSelectedProblem();
 
+    void ExecuteProblemOne();
+    bool isPrime(const size_t& positiveInteger);
+
+    void ExecuteProblemTwo();
     Problem problem_;
 };
