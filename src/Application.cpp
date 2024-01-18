@@ -161,7 +161,8 @@ void Application::ExecuteProblemThree() {
 std::vector<std::pair<size_t, int>> Application::LoadDatas(const FileTxt& fileTxt) {
     // Load datas
     std::vector<std::pair<size_t, int>> datas;
-    for (int i = 0; i < fileTxt.GetContent_().size(); i++) {
+    int size = fileTxt.GetContent_().size();
+    for (int i = 0; i < size; i++) {
         std::vector<std::string> tempLine = fileTxt.SplitSpecificLine(" ", i);
         datas.push_back(std::pair<size_t, int>(std::stoi(tempLine[0].substr(1, tempLine[0].size()-1)), std::stoi(tempLine[1])));
     }
