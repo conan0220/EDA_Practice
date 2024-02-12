@@ -16,6 +16,9 @@ public:
 
     std::vector<std::string> GetContent_() const { return content_; }
 
+    static std::vector<std::string> SplitString(const std::string& pattern, const std::string& str);
+
+
 private:
     std::string filePath_ = "";
     std::vector<std::string> content_;

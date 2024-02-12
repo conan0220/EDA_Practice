@@ -1,11 +1,13 @@
 #include "Application.h"
 #include "FileTxt.h"
 #include "Matrix.hpp"
+#include "Node.h"
 
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include <fstream>
+#include <list>
 
 Application::Application() {
     SelectProblem();
@@ -34,7 +36,7 @@ void Application::ExecuteSelectedProblem() {
         ExecuteProblemThree();
     }
     else if (problem_ == FOUR) {
-
+        ExecuteProblemFour();
     }
     else if (problem_ == FIVE) {
 
@@ -227,4 +229,125 @@ std::vector<std::pair<size_t, int>> Application::FindElements(const std::vector<
     }
 
     return result;
+}
+
+void Application::ExecuteProblemFour() {
+    std::string filePath;
+    std::cout << "filePath: ";
+    std::cin >> filePath;
+    FileTxt inputFile("res/problem4/" + filePath);
+
+    std::vector<Node> nodes = GetNodesFromFile(inputFile);
+
+    std::vector<Line> lines = GetLines(nodes);
+    std::sort(lines.begin(), lines.end(), [](const Line& line1, const Line& line2) {
+        return line1.length < line2.length;
+    }); // sort lines
+
+    SpanningTree minimumSpanningTree(GetMinimumSpanningTree(lines));
+    
+    float total = 0;
+    for (auto line : minimumSpanningTree.GetLines_()) {
+        total += line.length;
+    }
+    std::cout << total << std::endl;
+}
+
+std::vector<Node> Application::GetNodesFromFile(const FileTxt& inputFile) {
+    std::vector<Node> nodes;
+    std::vector<std::string> content = inputFile.GetContent_();
+    int i = 0;
+    for (const std::string& line : content) {
+        unsigned N = ++i;
+        float x;
+        float y;
+        std::vector<std::string> temp = FileTxt::SplitString(",", FileTxt::SplitString("(", line)[1]);
+        x = std::stof(temp[0]);
+        y = std::stof(FileTxt::SplitString(")", temp[1])[0]);
+        Node node = Node(N, x, y);
+        nodes.push_back(node);
+    }
+
+    return nodes;
+}
+
+std::vector<Line> Application::GetLines(std::vector<Node> nodes) {
+    std::vector<Line> lines;
+    unsigned nodesSize = nodes.size();
+    for (int i = 0; i < nodesSize; i++) {
+        for (int j = i+1; j < nodesSize; j++) {
+            lines.push_back(Line(nodes[i], nodes[j]));
+        }
+    }
+    return lines;
+}
+
+StateOfLineInSpanningTree SpanningTree::StateOfLineInSpanningTree(const Line& line) const {
+    bool isNode1InSpanningTree = false;
+    bool isNode2InSpanningTree = false;
+
+    for (const Line& line_ : lines_) {
+        if (line.node1 == line_.node1 or line.node1 == line_.node2) {
+            isNode1InSpanningTree = true;
+        }
+        if (line.node2 == line_.node1 or line.node2 == line_.node2) {
+            isNode2InSpanningTree = true;
+        }
+        if (isNode1InSpanningTree and isNode2InSpanningTree) {
+            return TWO_NODE_EXIT;
+        }
+    }
+    if (!isNode1InSpanningTree and !isNode2InSpanningTree) {
+        return ZERO_NODE_EXIT;
+    }
+
+    return ONE_NODE_EXIT;
+}
+
+SpanningTree Application::GetMinimumSpanningTree(const std::vector<Line>& lines) const {
+    std::list<SpanningTree> trees;
+    for (const Line& line : lines) {
+        size_t numberOfTreesThatOneNodeExit = 0;
+        SpanningTree* firstTreeThatOneNodeExit = nullptr;
+        SpanningTree* secondTreeThatOneNodeExit = nullptr;
+        StateOfLineInSpanningTree state;
+        for (SpanningTree& tree : trees) {
+            state = tree.StateOfLineInSpanningTree(line);
+            if (state == TWO_NODE_EXIT) {
+                break;
+            }
+            else if (state == ONE_NODE_EXIT) {
+                numberOfTreesThatOneNodeExit++;
+                if (numberOfTreesThatOneNodeExit == 1) {
+                    firstTreeThatOneNodeExit = &tree;
+                }
+                else if (numberOfTreesThatOneNodeExit == 2) {
+                    secondTreeThatOneNodeExit = &tree;
+                }
+            }
+        }
+        if (numberOfTreesThatOneNodeExit == 1) {    // add new line to tree
+            firstTreeThatOneNodeExit->AddNewLine(line);
+        }
+        else if (numberOfTreesThatOneNodeExit == 2) {   // merge two tree with line
+            firstTreeThatOneNodeExit->AddNewLine(line);
+            firstTreeThatOneNodeExit->Merge(*secondTreeThatOneNodeExit);
+            trees.remove(*secondTreeThatOneNodeExit);
+        }
+        else if (state == TWO_NODE_EXIT) {
+            continue;
+        }
+        else {
+            trees.push_back(SpanningTree(line));
+        }
+    }
+
+    std::cout << trees.size() << std::endl;
+    return trees.front();
+}
+
+void SpanningTree::Merge(const SpanningTree& other) {
+    for (const Line& line : other.GetLines_()) {
+        lines_.push_back(line);
+    }
 }
