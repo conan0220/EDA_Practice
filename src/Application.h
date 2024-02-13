@@ -44,6 +44,7 @@ public:
     inline void AddNewLine(const Line& line) { lines_.push_back(line); }
     StateOfLineInSpanningTree StateOfLineInSpanningTree(const Line& line) const;
     void Merge(const SpanningTree& other);
+    float TotalLength() const;
 
     bool operator==(const SpanningTree& other) const {
         for (int i = 0; i < lines_.size(); i++) {

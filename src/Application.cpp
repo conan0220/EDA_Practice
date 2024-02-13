@@ -2,6 +2,7 @@
 #include "FileTxt.h"
 #include "Matrix.hpp"
 #include "Node.h"
+#include "TimeTracker.h"
 
 #include <iostream>
 #include <string>
@@ -237,6 +238,8 @@ void Application::ExecuteProblemFour() {
     std::cin >> filePath;
     FileTxt inputFile("res/problem4/" + filePath);
 
+    TimeTracker timeTracker;
+
     std::vector<Node> nodes = GetNodesFromFile(inputFile);
 
     std::vector<Line> lines = GetLines(nodes);
@@ -245,12 +248,12 @@ void Application::ExecuteProblemFour() {
     }); // sort lines
 
     SpanningTree minimumSpanningTree(GetMinimumSpanningTree(lines));
-    
-    float total = 0;
-    for (auto line : minimumSpanningTree.GetLines_()) {
-        total += line.length;
+
+    std::ofstream outputFile("res/problem4/output/" + filePath);
+    for (const Line& line : minimumSpanningTree.GetLines_()) {
+        outputFile << "(N" << line.node1.GetN_() << ",N" << line.node2.GetN_() << ") Length = " << line.length << std::endl;
     }
-    std::cout << total << std::endl;
+    outputFile << "Total Wire Length = " << minimumSpanningTree.TotalLength();
 }
 
 std::vector<Node> Application::GetNodesFromFile(const FileTxt& inputFile) {
@@ -311,6 +314,7 @@ SpanningTree Application::GetMinimumSpanningTree(const std::vector<Line>& lines)
         SpanningTree* firstTreeThatOneNodeExit = nullptr;
         SpanningTree* secondTreeThatOneNodeExit = nullptr;
         StateOfLineInSpanningTree state;
+        size_t indexOfSecondTreeThatOneNodeExit = 0;
         for (SpanningTree& tree : trees) {
             state = tree.StateOfLineInSpanningTree(line);
             if (state == TWO_NODE_EXIT) {
@@ -323,8 +327,10 @@ SpanningTree Application::GetMinimumSpanningTree(const std::vector<Line>& lines)
                 }
                 else if (numberOfTreesThatOneNodeExit == 2) {
                     secondTreeThatOneNodeExit = &tree;
+                    break;
                 }
             }
+            indexOfSecondTreeThatOneNodeExit++;
         }
         if (numberOfTreesThatOneNodeExit == 1) {    // add new line to tree
             firstTreeThatOneNodeExit->AddNewLine(line);
@@ -332,7 +338,9 @@ SpanningTree Application::GetMinimumSpanningTree(const std::vector<Line>& lines)
         else if (numberOfTreesThatOneNodeExit == 2) {   // merge two tree with line
             firstTreeThatOneNodeExit->AddNewLine(line);
             firstTreeThatOneNodeExit->Merge(*secondTreeThatOneNodeExit);
-            trees.remove(*secondTreeThatOneNodeExit);
+            auto it = trees.begin();
+            std::advance(it, indexOfSecondTreeThatOneNodeExit);
+            trees.erase(it);
         }
         else if (state == TWO_NODE_EXIT) {
             continue;
@@ -342,7 +350,6 @@ SpanningTree Application::GetMinimumSpanningTree(const std::vector<Line>& lines)
         }
     }
 
-    std::cout << trees.size() << std::endl;
     return trees.front();
 }
 
@@ -350,4 +357,12 @@ void SpanningTree::Merge(const SpanningTree& other) {
     for (const Line& line : other.GetLines_()) {
         lines_.push_back(line);
     }
+}
+
+float SpanningTree::TotalLength() const {
+    float total = 0;
+    for (const Line& line : lines_) {
+        total += line.length;
+    }
+    return total;
 }
